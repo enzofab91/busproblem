@@ -56,7 +56,7 @@ public class BusProblem extends AbstractIntegerProblem {
 		  while (it.hasNext()) {
 		      Map.Entry<Integer, Integer> pair = it.next();
 		      
-		      writer = new PrintWriter("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/debug_" +
+		      writer = new PrintWriter("/home/pablo/Fing/AE/Proyecto/DatosDeTest/debug_" +
 		    		  Integer.toString(pair.getKey()) + "_pasajeros", "UTF-8");
 			  
 			  writer.println("Matrinz de pasajeros");
@@ -76,7 +76,7 @@ public class BusProblem extends AbstractIntegerProblem {
 		      writer.close();
 		  }
 		  
-		  writer = new PrintWriter("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/debug_distancias", "UTF-8");
+		  writer = new PrintWriter("/home/pablo/Fing/AE/Proyecto/DatosDeTest/debug_distancias", "UTF-8");
 		  
 		  //System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 		  writer.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++");
@@ -102,7 +102,7 @@ public class BusProblem extends AbstractIntegerProblem {
   
   private void readProblem(String file){
 	try{
-		BufferedReader br = new BufferedReader(new FileReader("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/" + file));
+		BufferedReader br = new BufferedReader(new FileReader("/home/pablo/Fing/AE/Proyecto/DatosDeTest/" + file));
 
 	    String line = br.readLine();
 	    String[] elems = line.split(",");
@@ -118,7 +118,7 @@ public class BusProblem extends AbstractIntegerProblem {
 	    	this.correlacion.put(Integer.parseInt(elems[i]), i);
 	    	
 	    	//Leo las distancas
-	    	BufferedReader distancias = new BufferedReader(new FileReader("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/" + elems[i]+ "_distancias"));
+	    	BufferedReader distancias = new BufferedReader(new FileReader("/home/pablo/Fing/AE/Proyecto/DatosDeTest/" + elems[i]+ "_distancias"));
 	    	
 	    	line = distancias.readLine();
 
@@ -132,7 +132,7 @@ public class BusProblem extends AbstractIntegerProblem {
 	        distancias.close();
 	        
 	        //Leo matriz de pasajeros
-	        BufferedReader pasajeros = new BufferedReader(new FileReader("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/" + elems[i]+ "_pasajeros"));
+	        BufferedReader pasajeros = new BufferedReader(new FileReader("/home/pablo/Fing/AE/Proyecto/DatosDeTest/" + elems[i]+ "_pasajeros"));
 	    	
 	    	line = pasajeros.readLine();
 

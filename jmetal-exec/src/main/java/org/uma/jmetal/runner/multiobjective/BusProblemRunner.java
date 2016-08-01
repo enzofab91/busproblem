@@ -69,8 +69,8 @@ public class BusProblemRunner extends AbstractAlgorithmRunner {
       //referenceParetoFront = "/home/enzofabbiani/Desktop/AE/PROYECTO/jMetal/jmetal-problem/src/test/resources/pareto_fronts/ZDT1.pf" ;
     }
 
-    problem = new BusProblem("lineas");//ProblemUtils.<IntegerSolution> loadProblem(problemName);
-
+    problem = new BusProblem("lineas");
+    
     double crossoverProbability = 0.9 ;
     double crossoverDistributionIndex = 20.0 ;
     crossover = new IntegerSBXCrossover(crossoverProbability, crossoverDistributionIndex) ;
