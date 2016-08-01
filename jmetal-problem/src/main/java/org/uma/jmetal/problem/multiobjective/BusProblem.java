@@ -50,15 +50,18 @@ public class BusProblem extends AbstractIntegerProblem {
   
   public void showProblem(){
 	  try{
-		  PrintWriter writer = new PrintWriter("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/debug", "UTF-8");
-		  
-		  writer.println("Matrinz de pasajeros");
-		  //System.out.println("Matriz de pasajeros");
-		  
 		  Iterator<Map.Entry<Integer, Integer>> it = this.correlacion.entrySet().iterator();
 		  
+		  PrintWriter writer = null;
 		  while (it.hasNext()) {
 		      Map.Entry<Integer, Integer> pair = it.next();
+		      
+		      writer = new PrintWriter("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/debug_" +
+		    		  Integer.toString(pair.getKey()) + "_pasajeros", "UTF-8");
+			  
+			  writer.println("Matrinz de pasajeros");
+			  //System.out.println("Matriz de pasajeros");
+			  
 		      writer.println("LINEA: " + Integer.toString(pair.getKey()));
 		      //System.out.println("LINEA: " + Integer.toString(pair.getKey()));
 		      
@@ -70,7 +73,10 @@ public class BusProblem extends AbstractIntegerProblem {
 		    		  writer.print("null ");
 		    		  //System.out.print("null ");
 		      }
+		      writer.close();
 		  }
+		  
+		  writer = new PrintWriter("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/debug_distancias", "UTF-8");
 		  
 		  //System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 		  writer.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++");
