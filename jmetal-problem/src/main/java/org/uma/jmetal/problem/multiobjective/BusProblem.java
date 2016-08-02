@@ -37,6 +37,7 @@ public class BusProblem extends AbstractIntegerProblem {
   public BusProblem(String lines)  {
     readProblem(lines);
     showProblem();
+    System.out.println("CANT MAXIMA PASAJEROS = " + getParameter("CantidadMaximaPasajeros"));
     
     setNumberOfVariables(this.cantLines);
     setNumberOfObjectives(2);
@@ -46,6 +47,35 @@ public class BusProblem extends AbstractIntegerProblem {
   /** Evaluate() method */
   @Override
   public void evaluate(IntegerSolution solution) {
+	  double fitness1;
+	  double fitness2;
+
+	  fitness1 = 0.0 ;
+	  fitness2 = 0.0 ;
+	  
+	  int cantidadMaximaPasajeros = 50; //Integer.parseInt(getParameter("CantidadMaximaPasajeros"));
+	  int demoraPromedioSubir = 30; //Integer.parseInt(getParameter("DemoraPromedioSubir"));
+	  
+	  int[] paradas;
+	  for (int i = 0; i < this.cantLines; i++) {
+		  //para cada linea recorro las paradas
+		  paradas = solution.getParadas(i);
+		  
+		  for (int j = 0; j < paradas.length -1; j++){  
+			  if (this.Matrizpasajeros[j][j+1].getSuben() - this.Matrizpasajeros[j][j+1].getBajan() 
+					  <= cantidadMaximaPasajeros){  
+				  fitness1 += this.Matrizpasajeros[j][j+1].getSuben() - this.Matrizpasajeros[j][j+1].getBajan();
+				  fitness2 += this.matrizDistancias[j][j+1] + (this.Matrizpasajeros[j][j+1].getSuben() - this.Matrizpasajeros[j][j+1].getBajan()) *
+						  demoraPromedioSubir;
+			  } else {
+				  fitness1 += solution.getAsientosLibres(i);
+				  fitness2 += this.matrizDistancias[j][j+1] + (solution.getAsientosLibres(i) * demoraPromedioSubir);
+			  }
+		  }
+	  }
+
+	  solution.setObjective(0, fitness1);
+	  solution.setObjective(1, fitness2);
   }
   
   public void showProblem(){
@@ -100,6 +130,30 @@ public class BusProblem extends AbstractIntegerProblem {
 	  }
   }
   
+  private String getParameter(String ParameterName){
+	  String valor = "";
+	  try{
+		    BufferedReader parametros = new BufferedReader(new FileReader("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/parametros"));
+		    String line = parametros.readLine();
+
+		    while (line != null) {
+		       	String[] tokens = line.split("-");
+		       	String token = tokens[0].trim();
+		       	if (ParameterName.trim().equals(token)){
+		       		valor = tokens[1];
+		       	}
+		        line = parametros.readLine();
+		    }
+			
+			parametros.close();
+		}
+		catch(IOException e){
+			System.out.println("Archivo no encontrado");
+			System.exit(-1);
+		}
+		return valor;
+  }
+		
   private void readProblem(String file){
 	try{
 		BufferedReader br = new BufferedReader(new FileReader("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/" + file));

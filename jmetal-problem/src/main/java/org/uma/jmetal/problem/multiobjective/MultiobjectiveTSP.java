@@ -68,6 +68,7 @@ public class MultiobjectiveTSP extends AbstractIntegerPermutationProblem {
       fitness1 += distanceMatrix[x][y] ;
       fitness2 += costMatrix[x][y];
     }
+    
     int firstCity ;
     int lastCity  ;
 
