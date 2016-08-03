@@ -1,5 +1,6 @@
 package org.uma.jmetal.problem;
 
+import java.util.List;
 import java.util.Map;
 
 import org.uma.jmetal.problem.impl.SDTSubenBajan;
@@ -11,5 +12,7 @@ public interface BusProblem extends Problem<BusSolution> {
 	public float[][] getMatrizDistancia();
 	public Map<Integer, Integer> getCorrelacion();
 	public int getCantidadDeParadas();
+	public Map<Integer,List<Integer>> getOrdenParadas();
+	public int getCantidadMaximaPasajeros();
 	
 }

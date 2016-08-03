@@ -1,13 +1,12 @@
 package org.uma.jmetal.solution.impl;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.uma.jmetal.problem.BusProblem;
-import org.uma.jmetal.problem.IntegerProblem;
 import org.uma.jmetal.problem.impl.SDTSubenBajan;
 import org.uma.jmetal.solution.BusSolution;
-import org.uma.jmetal.solution.Solution;
 
 
 @SuppressWarnings("serial")
@@ -46,7 +45,6 @@ public class DefaultBusProblemSolution
 	}
 	
 	private void crearSolucion(BusProblem problem){
-		float[][] matrizDistancias = problem.getMatrizDistancia();
 		SDTSubenBajan[][] matrizPasajeros = problem.getMatrizPasajeros();
 		Map<Integer, Integer> lineas = problem.getCorrelacion();
 		
@@ -54,35 +52,41 @@ public class DefaultBusProblemSolution
 		    int linea = entry.getKey();
 		    int posicion = entry.getValue();
 		    
-		    BusProblemLine paradas = new BusProblemLine(linea,50);
+		    BusProblemLine paradas = new BusProblemLine(linea,problem.getCantidadMaximaPasajeros());
 		    
-		    for (int i=0; i<problem.getCantidadDeParadas(); i++){
-		    	if(matrizPasajeros[posicion][i] != null){
+		    Iterator<Integer> ordenParadas = problem.getOrdenParadas().get(linea).iterator();
+		    
+		    while(ordenParadas.hasNext()){
+		    	int aux = ordenParadas.next();
+		    	
+		    	if(matrizPasajeros[posicion][aux] != null){
 		    		BusProblemStop bps;
 		
 		    			
-	    			if(paradas.getK() >= (matrizPasajeros[posicion][i].getSuben() - matrizPasajeros[posicion][i].getBajan())){
+	    			if(paradas.getK() >= (matrizPasajeros[posicion][aux].getSuben() - matrizPasajeros[posicion][aux].getBajan())){
 	    				
-	    				bps = new BusProblemStop(matrizPasajeros[posicion][i].getSuben(),
-	    														matrizPasajeros[posicion][i].getBajan(),
-	    														i,
+	    				bps = new BusProblemStop(matrizPasajeros[posicion][aux].getSuben(),
+	    														matrizPasajeros[posicion][aux].getBajan(),
+	    														aux,
 	    														1); 
 	    			}
 	    			else{
 	    				
-	    				bps = new BusProblemStop(paradas.getK() + matrizPasajeros[posicion][i].getBajan(),
-																matrizPasajeros[posicion][i].getBajan(),
-																i,
+	    				bps = new BusProblemStop(paradas.getK() + matrizPasajeros[posicion][aux].getBajan(),
+																matrizPasajeros[posicion][aux].getBajan(),
+																aux,
 																1); 
 	    			}
 	    			
-	    			paradas.setK(paradas.getK() - (bps.getSuben() - bps.getBajan()));
+	    			paradas.setK(paradas.getK()  + bps.getBajan());
+	    			paradas.setK(paradas.getK()  - bps.getSuben());
+	    			
 		    		paradas.agregarParada(bps);
 		    	}
-		    }	
+		    }
 		    
 			setVariableValue(posicion, paradas);
-			
+			paradas.print();
 		}		
 	}
 

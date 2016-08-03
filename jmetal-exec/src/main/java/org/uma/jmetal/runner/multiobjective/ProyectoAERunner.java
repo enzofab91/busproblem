@@ -18,8 +18,10 @@ import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
 import org.uma.jmetal.operator.CrossoverOperator;
 import org.uma.jmetal.operator.MutationOperator;
 import org.uma.jmetal.operator.SelectionOperator;
+import org.uma.jmetal.operator.impl.crossover.BusProblemCrossover;
 import org.uma.jmetal.operator.impl.crossover.IntegerSBXCrossover;
 import org.uma.jmetal.operator.impl.crossover.SBXCrossover;
+import org.uma.jmetal.operator.impl.mutation.BusProblemMutation;
 import org.uma.jmetal.operator.impl.mutation.IntegerPolynomialMutation;
 import org.uma.jmetal.operator.impl.mutation.PolynomialMutation;
 import org.uma.jmetal.operator.impl.selection.BinaryTournamentSelection;
@@ -33,6 +35,7 @@ import org.uma.jmetal.util.AlgorithmRunner;
 import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.ProblemUtils;
+import org.uma.jmetal.util.obtenerParametros;
 import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
 
 import java.io.FileNotFoundException;
@@ -72,21 +75,19 @@ public class ProyectoAERunner extends AbstractAlgorithmRunner {
 
     problem = new ProyectoAE("lineas");
     
-    double crossoverProbability = 0.9 ;
-    double crossoverDistributionIndex = 20.0 ;
-    crossover = null;//new IntegerSBXCrossover(crossoverProbability, crossoverDistributionIndex) ;
+    double crossoverProbability = Double.parseDouble(obtenerParametros.getParameter("ProbabilidadCruzamiento"));
+    crossover = new BusProblemCrossover(crossoverProbability);
 
-    double mutationProbability = 1.0 / problem.getNumberOfVariables() ;
-    double mutationDistributionIndex = 20.0 ;
-    mutation = null;//new IntegerPolynomialMutation(mutationProbability, mutationDistributionIndex) ;
-
+    double mutationProbability = Double.parseDouble(obtenerParametros.getParameter("ProbabilidadMutacion"));
+    mutation = new BusProblemMutation(mutationProbability);
+    
     selection = new BinaryTournamentSelection<BusSolution>(
         new RankingAndCrowdingDistanceComparator<BusSolution>());
 
     algorithm = new NSGAIIBuilder<BusSolution>(problem, crossover, mutation)
         .setSelectionOperator(selection)
-        .setMaxEvaluations(25000)
-        .setPopulationSize(100)
+        .setMaxEvaluations(Integer.parseInt(obtenerParametros.getParameter("CantidadGeneraciones")))
+        .setPopulationSize(Integer.parseInt(obtenerParametros.getParameter("Poblacion")))
         .build() ;
 
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)

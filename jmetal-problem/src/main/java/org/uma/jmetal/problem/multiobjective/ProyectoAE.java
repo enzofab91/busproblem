@@ -2,32 +2,34 @@
 package org.uma.jmetal.problem.multiobjective;
 
 import org.uma.jmetal.problem.impl.AbstractBusProblem;
-import org.uma.jmetal.problem.impl.AbstractIntegerProblem;
 import org.uma.jmetal.problem.impl.SDTSubenBajan;
 import org.uma.jmetal.solution.BusSolution;
-import org.uma.jmetal.solution.IntegerSolution;
-import org.uma.jmetal.util.JMetalException;
+import org.uma.jmetal.solution.impl.BusProblemLine;
+import org.uma.jmetal.solution.impl.BusProblemStop;
+import org.uma.jmetal.util.obtenerParametros;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.io.StreamTokenizer;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.LinkedList;
 
 @SuppressWarnings("serial")
 public class ProyectoAE extends AbstractBusProblem {
+	
+  private int cantidadMaximaPasajeros = Integer.parseInt(obtenerParametros.getParameter("CantidadMaximaPasajeros"));
+  private int demoraPromedioSubir = Integer.parseInt(obtenerParametros.getParameter("DemoraPromedioSubir"));
+  private int demoraPromedioBajar = Integer.parseInt(obtenerParametros.getParameter("DemoraPromedioBajar"));
+  
   private int cantLines ;
-  private int dimension;
-  private int cantParadas = 7800;
+  private int cantParadas = Integer.parseInt(obtenerParametros.getParameter("CantidadParadas"));
   private SDTSubenBajan[][] Matrizpasajeros;
-  private Map<Integer,Integer> correlacion = new HashMap<Integer,Integer>(); 
+  private Map<Integer,Integer> correlacion = new HashMap<Integer,Integer>();
+  private Map<Integer,List<Integer>> ordenParadas = new HashMap<Integer, List<Integer>>();
   private float[][] matrizDistancias = new float[cantParadas][cantParadas];
 
 
@@ -39,9 +41,7 @@ public class ProyectoAE extends AbstractBusProblem {
   
   public ProyectoAE(String lines)  {
     readProblem(lines);
-    showProblem();
-    System.out.println("CANT MAXIMA PASAJEROS = " + getParameter("CantidadMaximaPasajeros"));
-    
+    showProblem();    
     setNumberOfVariables(this.cantLines);
     setNumberOfObjectives(2);
     setName("BusProblem");
@@ -56,26 +56,28 @@ public class ProyectoAE extends AbstractBusProblem {
 	  fitness1 = 0.0 ;
 	  fitness2 = 0.0 ;
 	  
-	  int cantidadMaximaPasajeros = 50; //Integer.parseInt(getParameter("CantidadMaximaPasajeros"));
-	  int demoraPromedioSubir = 30; //Integer.parseInt(getParameter("DemoraPromedioSubir"));
+	  BusProblemLine linea;
 	  
-	  int[] paradas;
-	  //for (int i = 0; i < this.cantLines; i++) {
+	  for (int i = 0; i < this.cantLines; i++) {
 		  //para cada linea recorro las paradas
-		//  paradas = solution.getParadas(i);
+		  linea = solution.getVariableValue(i);
+		  Iterator<BusProblemStop> paradas = linea.getParadas().iterator();
+		  Iterator<BusProblemStop> paradas_aux = linea.getParadas().iterator();
 		  
-		//  for (int j = 0; j < paradas.length -1; j++){  
-		//	  if (this.Matrizpasajeros[j][j+1].getSuben() - this.Matrizpasajeros[j][j+1].getBajan() 
-		//			  <= cantidadMaximaPasajeros){  
-		//		  fitness1 += this.Matrizpasajeros[j][j+1].getSuben() - this.Matrizpasajeros[j][j+1].getBajan();
-		//		  fitness2 += this.matrizDistancias[j][j+1] + (this.Matrizpasajeros[j][j+1].getSuben() - this.Matrizpasajeros[j][j+1].getBajan()) *
-		//				  demoraPromedioSubir;
-		//	  } else {
-				  //fitness1 += solution.getAsientosLibres(i);
-				  //fitness2 += this.matrizDistancias[j][j+1] + (solution.getAsientosLibres(i) * demoraPromedioSubir);
-		//	  }
-		//  }
-	  //}
+		  BusProblemStop parada_siguiente = paradas_aux.next();
+		  
+		  
+		  while (paradas.hasNext()){ 
+			  BusProblemStop parada_actual = paradas.next();
+			  
+			  fitness1 += parada_actual.getSuben();
+			  
+			  fitness2 -= matrizDistancias[parada_actual.getParada()][parada_siguiente.getParada()] + 
+					  		(parada_actual.getSuben() * demoraPromedioSubir) + 
+					  		(parada_actual.getBajan() * demoraPromedioBajar);
+			  
+		  }
+	  }
 
 	  solution.setObjective(0, fitness1);
 	  solution.setObjective(1, fitness2);
@@ -89,12 +91,12 @@ public class ProyectoAE extends AbstractBusProblem {
 		  while (it.hasNext()) {
 		      Map.Entry<Integer, Integer> pair = it.next();
 		      
+		      //Imprime matriz de pasajeros
+		      
 		      //writer = new PrintWriter("/home/pablo/Fing/AE/Proyecto/DatosDeTest/debug_" +
 		      //	  Integer.toString(pair.getKey()) + "_pasajeros", "UTF-8");
 		      writer = new PrintWriter("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/debug_" +
 		    		  Integer.toString(pair.getKey()) + "_pasajeros", "UTF-8");
-			  
-			  writer.println("Matrinz de pasajeros");
 			  
 		      writer.println("LINEA: " + Integer.toString(pair.getKey()));
 		      
@@ -106,22 +108,34 @@ public class ProyectoAE extends AbstractBusProblem {
 		      }
 		      writer.println();
 		      writer.close();
+		      
+		      //Imprime orden de paradas
+		      
+		      writer = new PrintWriter("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/debug_" +
+		    		  Integer.toString(pair.getKey()) + "_orden", "UTF-8");
+		      
+		      Iterator<Integer> it2 = this.ordenParadas.get(pair.getKey()).iterator();
+		      
+		      while(it2.hasNext()){
+		    	  writer.println(it2.next());
+		      }
+		      
+		      writer.println();
+		      writer.close();
+		      
 		  }
 		  
 		  //writer = new PrintWriter("/home/pablo/Fing/AE/Proyecto/DatosDeTest/debug_distancias", "UTF-8");
 		  writer = new PrintWriter("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/debug_distancias", "UTF-8");
 		  
-		  //System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-		  writer.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 		  //System.out.println("Matriz de distancias");
 		  writer.println("Matriz de distancias");
 		  for(int i = 0; i < this.cantParadas; i++){
 			  for(int j = 0; j < this.cantParadas; j++){
-				  //System.out.print(Float.toString(this.matrizDistancias[i][j]) + " ");
 				  writer.print(Float.toString(this.matrizDistancias[i][j]) + " ");
 				  
 			  }
-			  //System.out.println();
+			  
 			  writer.println();
 		  }
 		  
@@ -131,30 +145,6 @@ public class ProyectoAE extends AbstractBusProblem {
 	  catch(Exception e){
 		  System.out.println("No anda viejita");
 	  }
-  }
-  
-  private String getParameter(String ParameterName){
-	  String valor = "";
-	  try{
-		    BufferedReader parametros = new BufferedReader(new FileReader("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/parametros"));
-		    String line = parametros.readLine();
-
-		    while (line != null) {
-		       	String[] tokens = line.split("-");
-		       	String token = tokens[0].trim();
-		       	if (ParameterName.trim().equals(token)){
-		       		valor = tokens[1];
-		       	}
-		        line = parametros.readLine();
-		    }
-			
-			parametros.close();
-		}
-		catch(IOException e){
-			System.out.println("Archivo no encontrado");
-			System.exit(-1);
-		}
-		return valor;
   }
 		
   private void readProblem(String file){
@@ -194,13 +184,16 @@ public class ProyectoAE extends AbstractBusProblem {
 	        //BufferedReader pasajeros = new BufferedReader(new FileReader("/home/pablo/Fing/AE/Proyecto/DatosDeTest/" + elems[i]+ "_pasajeros"));
 	        BufferedReader pasajeros = new BufferedReader(new FileReader("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/" + elems[i]+ "_pasajeros"));
 	        
+	        
 	    	line = pasajeros.readLine();
-
+	    	this.ordenParadas.put(Integer.parseInt(elems[i]), new LinkedList<Integer>());
+	    	
 	        while (line != null) {
 	        	String[] linea = line.split(",");
 	        	SDTSubenBajan SDT = new SDTSubenBajan(Integer.parseInt(linea[1]), Integer.parseInt(linea[2]));
 	        	
 	        	this.Matrizpasajeros[i][Integer.parseInt(linea[0])] = SDT;
+	        	this.ordenParadas.get(Integer.parseInt(elems[i])).add(Integer.parseInt(linea[0]));
 	        	
 	            line = pasajeros.readLine();
 	        }
@@ -235,5 +228,15 @@ public class ProyectoAE extends AbstractBusProblem {
 	@Override
 	public int getCantidadDeParadas() {
 		return cantParadas;
+	}
+
+	@Override
+	public Map<Integer, List<Integer>> getOrdenParadas() {
+		return ordenParadas;
+	}
+
+	@Override
+	public int getCantidadMaximaPasajeros() {
+		return cantidadMaximaPasajeros;
 	}
 }
