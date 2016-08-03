@@ -1,4 +1,4 @@
-package org.uma.jmetal.problem.multiobjective;
+package org.uma.jmetal.problem.impl;
 
 public class SDTSubenBajan {
 	private int suben;

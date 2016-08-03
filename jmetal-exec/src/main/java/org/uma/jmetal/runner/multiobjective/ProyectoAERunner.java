@@ -24,8 +24,9 @@ import org.uma.jmetal.operator.impl.mutation.IntegerPolynomialMutation;
 import org.uma.jmetal.operator.impl.mutation.PolynomialMutation;
 import org.uma.jmetal.operator.impl.selection.BinaryTournamentSelection;
 import org.uma.jmetal.problem.Problem;
-import org.uma.jmetal.problem.multiobjective.BusProblem;
+import org.uma.jmetal.problem.multiobjective.ProyectoAE;
 import org.uma.jmetal.runner.AbstractAlgorithmRunner;
+import org.uma.jmetal.solution.BusSolution;
 import org.uma.jmetal.solution.IntegerSolution;
 import org.uma.jmetal.solution.IntegerSolution;
 import org.uma.jmetal.util.AlgorithmRunner;
@@ -42,7 +43,7 @@ import java.util.List;
  *
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
-public class BusProblemRunner extends AbstractAlgorithmRunner {
+public class ProyectoAERunner extends AbstractAlgorithmRunner {
   /**
    * @param args Command line arguments.
    * @throws JMetalException
@@ -51,11 +52,11 @@ public class BusProblemRunner extends AbstractAlgorithmRunner {
     java org.uma.jmetal.runner.multiobjective.NSGAIIRunner problemName [referenceFront]
    */
   public static void main(String[] args) throws JMetalException, FileNotFoundException {
-    Problem<IntegerSolution> problem;
-    Algorithm<List<IntegerSolution>> algorithm;
-    CrossoverOperator<IntegerSolution> crossover;
-    MutationOperator<IntegerSolution> mutation;
-    SelectionOperator<List<IntegerSolution>, IntegerSolution> selection;
+    Problem<BusSolution> problem;
+    Algorithm<List<BusSolution>> algorithm;
+    CrossoverOperator<BusSolution> crossover;
+    MutationOperator<BusSolution> mutation;
+    SelectionOperator<List<BusSolution>, BusSolution> selection;
     String referenceParetoFront = "" ;
 
     String problemName ;
@@ -69,20 +70,20 @@ public class BusProblemRunner extends AbstractAlgorithmRunner {
       //referenceParetoFront = "/home/enzofabbiani/Desktop/AE/PROYECTO/jMetal/jmetal-problem/src/test/resources/pareto_fronts/ZDT1.pf" ;
     }
 
-    problem = new BusProblem("lineas");//ProblemUtils.<IntegerSolution> loadProblem(problemName);
-
+    problem = new ProyectoAE("lineas");
+    
     double crossoverProbability = 0.9 ;
     double crossoverDistributionIndex = 20.0 ;
-    crossover = new IntegerSBXCrossover(crossoverProbability, crossoverDistributionIndex) ;
+    crossover = null;//new IntegerSBXCrossover(crossoverProbability, crossoverDistributionIndex) ;
 
     double mutationProbability = 1.0 / problem.getNumberOfVariables() ;
     double mutationDistributionIndex = 20.0 ;
-    mutation = new IntegerPolynomialMutation(mutationProbability, mutationDistributionIndex) ;
+    mutation = null;//new IntegerPolynomialMutation(mutationProbability, mutationDistributionIndex) ;
 
-    selection = new BinaryTournamentSelection<IntegerSolution>(
-        new RankingAndCrowdingDistanceComparator<IntegerSolution>());
+    selection = new BinaryTournamentSelection<BusSolution>(
+        new RankingAndCrowdingDistanceComparator<BusSolution>());
 
-    algorithm = new NSGAIIBuilder<IntegerSolution>(problem, crossover, mutation)
+    algorithm = new NSGAIIBuilder<BusSolution>(problem, crossover, mutation)
         .setSelectionOperator(selection)
         .setMaxEvaluations(25000)
         .setPopulationSize(100)
@@ -91,7 +92,7 @@ public class BusProblemRunner extends AbstractAlgorithmRunner {
     AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm)
         .execute() ;
 
-    List<IntegerSolution> population = algorithm.getResult() ;
+    List<BusSolution> population = algorithm.getResult() ;
     long computingTime = algorithmRunner.getComputingTime() ;
 
     JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
