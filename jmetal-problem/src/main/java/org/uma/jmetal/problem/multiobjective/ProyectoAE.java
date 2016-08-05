@@ -64,17 +64,33 @@ public class ProyectoAE extends AbstractBusProblem {
 		  Iterator<BusProblemStop> paradas = linea.getParadas().iterator();
 		  Iterator<BusProblemStop> paradas_aux = linea.getParadas().iterator();
 		  
-		  BusProblemStop parada_siguiente = paradas_aux.next();
-		  
+		  BusProblemStop parada_siguiente = null;
+		  BusProblemStop parada_actual = paradas.next(); //Primer parada
+		  BusProblemStop parada_actual_aux = paradas_aux.next();
 		  
 		  while (paradas.hasNext()){ 
-			  BusProblemStop parada_actual = paradas.next();
+			   
+			  //Me aseguro que la parada existe
+			  if (parada_actual.getOffset() != -1)
+					  fitness1 += parada_actual.getSuben();
 			  
-			  fitness1 += parada_actual.getSuben();
 			  
-			  fitness2 -= matrizDistancias[parada_actual.getParada()][parada_siguiente.getParada()] + 
-					  		(parada_actual.getSuben() * demoraPromedioSubir) + 
-					  		(parada_actual.getBajan() * demoraPromedioBajar);
+			  //Busco la siguiente parada
+			  while(paradas.hasNext()){
+				  parada_siguiente = paradas.next();
+				  
+				  fitness2 -= matrizDistancias[parada_actual_aux.getParada()][parada_siguiente.getParada()];
+				  
+				  if(parada_siguiente.getOffset() != -1)
+					  break;
+				  
+				  parada_actual_aux = paradas_aux.next();
+				 
+			  }
+			  
+			  fitness2 -=	(parada_actual.getSuben() * demoraPromedioSubir) + (parada_actual.getBajan() * demoraPromedioBajar);
+			  
+			  parada_actual = parada_siguiente;
 			  
 		  }
 	  }
