@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.uma.jmetal.problem.BusProblem;
+import org.uma.jmetal.problem.impl.SDTCoordenadas;
 import org.uma.jmetal.problem.impl.SDTSubenBajan;
 import org.uma.jmetal.solution.BusSolution;
 
@@ -46,6 +47,7 @@ public class DefaultBusProblemSolution
 	
 	private void crearSolucion(BusProblem problem){
 		SDTSubenBajan[][] matrizPasajeros = problem.getMatrizPasajeros();
+		Map<Integer, SDTCoordenadas> coordenadas = problem.getCoordenadas();
 		Map<Integer, Integer> lineas = problem.getCorrelacion();
 		
 		for (Entry<Integer, Integer> entry : lineas.entrySet()) {
@@ -68,6 +70,8 @@ public class DefaultBusProblemSolution
 	    				bps = new BusProblemStop(matrizPasajeros[posicion][aux].getSuben(),
 	    														matrizPasajeros[posicion][aux].getBajan(),
 	    														aux,
+	    														coordenadas.get(aux).getLatitud(),
+	    														coordenadas.get(aux).getLogitud(),
 	    														1); 
 	    			}
 	    			else{
@@ -75,6 +79,8 @@ public class DefaultBusProblemSolution
 	    				bps = new BusProblemStop(paradas.getK() + matrizPasajeros[posicion][aux].getBajan(),
 																matrizPasajeros[posicion][aux].getBajan(),
 																aux,
+																coordenadas.get(aux).getLatitud(),
+	    														coordenadas.get(aux).getLogitud(),
 																1); 
 	    			}
 	    			

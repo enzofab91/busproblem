@@ -1,7 +1,9 @@
 //  BusProblem.java
 package org.uma.jmetal.problem.multiobjective;
 
+import org.apache.commons.math3.analysis.function.Sin;
 import org.uma.jmetal.problem.impl.AbstractBusProblem;
+import org.uma.jmetal.problem.impl.SDTCoordenadas;
 import org.uma.jmetal.problem.impl.SDTSubenBajan;
 import org.uma.jmetal.solution.BusSolution;
 import org.uma.jmetal.solution.impl.BusProblemLine;
@@ -17,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.LinkedList;
+import java.lang.Math;
 
 @SuppressWarnings("serial")
 public class ProyectoAE extends AbstractBusProblem {
@@ -30,7 +33,8 @@ public class ProyectoAE extends AbstractBusProblem {
   private SDTSubenBajan[][] Matrizpasajeros;
   private Map<Integer,Integer> correlacion = new HashMap<Integer,Integer>();
   private Map<Integer,List<Integer>> ordenParadas = new HashMap<Integer, List<Integer>>();
-  private float[][] matrizDistancias = new float[cantParadas][cantParadas];
+  //private float[][] matrizDistancias = new float[cantParadas][cantParadas];
+  private Map<Integer, SDTCoordenadas> coordenadas = new HashMap<Integer, SDTCoordenadas>();
 
 
   /** Constructor */
@@ -61,38 +65,22 @@ public class ProyectoAE extends AbstractBusProblem {
 	  for (int i = 0; i < this.cantLines; i++) {
 		  //para cada linea recorro las paradas
 		  linea = solution.getVariableValue(i);
-		  Iterator<BusProblemStop> paradas = linea.getParadas().iterator();
-		  Iterator<BusProblemStop> paradas_aux = linea.getParadas().iterator();
+		  List<BusProblemStop> paradas = linea.getParadas();
 		  
-		  BusProblemStop parada_siguiente = null;
-		  BusProblemStop parada_actual = paradas.next(); //Primer parada
-		  BusProblemStop parada_actual_aux = paradas_aux.next();
-		  
-		  while (paradas.hasNext()){ 
-			   
-			  //Me aseguro que la parada existe
-			  if (parada_actual.getOffset() != -1)
-					  fitness1 += parada_actual.getSuben();
+		  for(int j=0; i < paradas.size()-1 ; i++){
 			  
-			  
-			  //Busco la siguiente parada
-			  while(paradas.hasNext()){
-				  parada_siguiente = paradas.next();
-				  
-				  fitness2 -= matrizDistancias[parada_actual_aux.getParada()][parada_siguiente.getParada()];
-				  
-				  if(parada_siguiente.getOffset() != -1)
-					  break;
-				  
-				  parada_actual_aux = paradas_aux.next();
-				 
-			  }
-			  
-			  fitness2 -=	(parada_actual.getSuben() * demoraPromedioSubir) + (parada_actual.getBajan() * demoraPromedioBajar);
-			  
-			  parada_actual = parada_siguiente;
-			  
-		  }
+			//Me aseguro que la parada existe
+			if (paradas.get(j).getOffset() != -1)
+				fitness1 += paradas.get(j).getSuben();  
+			
+			//Busco la siguiente parada
+			int t = j + 1;
+			while(paradas.get(t).getOffset() != -1){
+				
+				fitness2 -= calcularDistancia(paradas.get(j).getLatitud(),paradas.get(j).getLongitud(),
+											paradas.get(t).getLatitud(),paradas.get(t).getLongitud());
+			}
+		  } 
 	  }
 
 	  solution.setObjective(0, fitness1);
@@ -109,10 +97,10 @@ public class ProyectoAE extends AbstractBusProblem {
 		      
 		      //Imprime matriz de pasajeros
 		      
-		      //writer = new PrintWriter("/home/pablo/Fing/AE/Proyecto/DatosDeTest/debug_" +
-		      //	  Integer.toString(pair.getKey()) + "_pasajeros", "UTF-8");
-		      writer = new PrintWriter("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/debug_" +
-		    		  Integer.toString(pair.getKey()) + "_pasajeros", "UTF-8");
+		      writer = new PrintWriter("/home/pablo/Fing/AE/Proyecto/DatosDeTest/debug_" +
+		      	  Integer.toString(pair.getKey()) + "_pasajeros", "UTF-8");
+		      //writer = new PrintWriter("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/debug_" +
+		    	//	  Integer.toString(pair.getKey()) + "_pasajeros", "UTF-8");
 			  
 		      writer.println("LINEA: " + Integer.toString(pair.getKey()));
 		      
@@ -126,9 +114,11 @@ public class ProyectoAE extends AbstractBusProblem {
 		      writer.close();
 		      
 		      //Imprime orden de paradas
+		      writer = new PrintWriter("/home/pablo/Fing/AE/Proyecto/DatosDeTest/debug_" +
+			      	  Integer.toString(pair.getKey()) + "_orden", "UTF-8");
 		      
-		      writer = new PrintWriter("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/debug_" +
-		    		  Integer.toString(pair.getKey()) + "_orden", "UTF-8");
+		      //writer = new PrintWriter("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/debug_" +
+		    //		  Integer.toString(pair.getKey()) + "_orden", "UTF-8");
 		      
 		      Iterator<Integer> it2 = this.ordenParadas.get(pair.getKey()).iterator();
 		      
@@ -141,19 +131,24 @@ public class ProyectoAE extends AbstractBusProblem {
 		      
 		  }
 		  
-		  //writer = new PrintWriter("/home/pablo/Fing/AE/Proyecto/DatosDeTest/debug_distancias", "UTF-8");
-		  writer = new PrintWriter("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/debug_distancias", "UTF-8");
+		  writer = new PrintWriter("/home/pablo/Fing/AE/Proyecto/DatosDeTest/debug_coorndenadas", "UTF-8");
+		  //writer = new PrintWriter("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/debug_distancias", "UTF-8");
 		  
-		  //System.out.println("Matriz de distancias");
-		  writer.println("Matriz de distancias");
-		  for(int i = 0; i < this.cantParadas; i++){
-			  for(int j = 0; j < this.cantParadas; j++){
-				  writer.print(Float.toString(this.matrizDistancias[i][j]) + " ");
-				  
-			  }
+		  Iterator<Map.Entry<Integer, SDTCoordenadas>> it3 = this.coordenadas.entrySet().iterator();
+		  
+		  writer.println("Coordenadas");
+		  
+		  while(it3.hasNext()){
+			  Map.Entry<Integer, SDTCoordenadas> pair = it3.next();
 			  
-			  writer.println();
+			  int parada = pair.getKey();
+			  double X = pair.getValue().getLatitud();
+			  double Y = pair.getValue().getLogitud();
+			  
+			  writer.println(Integer.toString(parada) + ',' + Double.toString(X) + ',' + Double.toString(Y));
+			  it3.next();
 		  }
+		  
 		  
 		  writer.close();
 		  System.out.println("termino");
@@ -165,8 +160,8 @@ public class ProyectoAE extends AbstractBusProblem {
 		
   private void readProblem(String file){
 	try{
-		//BufferedReader br = new BufferedReader(new FileReader("/home/pablo/Fing/AE/Proyecto/DatosDeTest/" + file));
-		BufferedReader br = new BufferedReader(new FileReader("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/" + file));
+		BufferedReader br = new BufferedReader(new FileReader("/home/pablo/Fing/AE/Proyecto/DatosDeTest/" + file));
+		//BufferedReader br = new BufferedReader(new FileReader("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/" + file));
 
 		String line = br.readLine();
 	    String[] elems = line.split(",");
@@ -182,14 +177,14 @@ public class ProyectoAE extends AbstractBusProblem {
 	    	this.correlacion.put(Integer.parseInt(elems[i]), i);
 	    	
 	    	//Leo las distancas
-	    	//BufferedReader distancias = new BufferedReader(new FileReader("/home/pablo/Fing/AE/Proyecto/DatosDeTest/" + elems[i]+ "_distancias"));
-	    	BufferedReader distancias = new BufferedReader(new FileReader("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/" + elems[i]+ "_distancias"));
+	    	BufferedReader distancias = new BufferedReader(new FileReader("/home/pablo/Fing/AE/Proyecto/DatosDeTest/coordenadas"));
+	    	//BufferedReader distancias = new BufferedReader(new FileReader("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/" + elems[i]+ "_distancias"));
 	    	
 	    	line = distancias.readLine();
 
 	        while (line != null) {
-	        	String[] distancia = line.split(",");
-	        	this.matrizDistancias[Integer.parseInt(distancia[0])][Integer.parseInt(distancia[1])] =Float.parseFloat(distancia[2]);
+	        	String[] coordenada = line.split(",");
+	        	this.coordenadas.put(Integer.parseInt(coordenada[0]), new SDTCoordenadas(Double.parseDouble(coordenada[1]), Double.parseDouble(coordenada[2])));
 	        	
 	            line = distancias.readLine();
 	        }
@@ -197,8 +192,8 @@ public class ProyectoAE extends AbstractBusProblem {
 	        distancias.close();
 	        
 	        //Leo matriz de pasajeros
-	        //BufferedReader pasajeros = new BufferedReader(new FileReader("/home/pablo/Fing/AE/Proyecto/DatosDeTest/" + elems[i]+ "_pasajeros"));
-	        BufferedReader pasajeros = new BufferedReader(new FileReader("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/" + elems[i]+ "_pasajeros"));
+	        BufferedReader pasajeros = new BufferedReader(new FileReader("/home/pablo/Fing/AE/Proyecto/DatosDeTest/" + elems[i]+ "_pasajeros"));
+	        //BufferedReader pasajeros = new BufferedReader(new FileReader("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/" + elems[i]+ "_pasajeros"));
 	        
 	        
 	    	line = pasajeros.readLine();
@@ -232,11 +227,6 @@ public class ProyectoAE extends AbstractBusProblem {
 	}
 	
 	@Override
-	public float[][] getMatrizDistancia() {
-		return matrizDistancias;
-	}
-	
-	@Override
 	public Map<Integer, Integer> getCorrelacion() {
 		return correlacion;
 	}
@@ -254,5 +244,26 @@ public class ProyectoAE extends AbstractBusProblem {
 	@Override
 	public int getCantidadMaximaPasajeros() {
 		return cantidadMaximaPasajeros;
+	}
+
+	@Override
+	public Map<Integer, SDTCoordenadas> getCoordenadas() {
+		return coordenadas;
+	}
+	
+	private double calcularDistancia(double lat1, double lon1, double lat2, double lon2){
+		double distancia;
+		
+		// convert decimal degrees to radians 
+	    //lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2]) TODO
+	    //haversine formula 
+	    double dlon = lon2 - lon1;
+	    double dlat = lat2 - lat1;
+	    
+	    double a = Math.pow(Math.sin(dlat/2),2) + Math.cos(lat1) * Math.cos(lat2) * Math.pow(Math.sin(dlon/2),2);
+	    double c = 2 * Math.asin(Math.sqrt(a));
+	    distancia = 6367 * c;
+	    
+	    return (distancia * 1000);
 	}
 }

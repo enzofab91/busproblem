@@ -122,7 +122,8 @@ public class BusProblemLine {
 		parada_anterior.setBajan(parada_anterior.getBajan() - quito_anterior_bajan);
 		
 		 BusProblemStop bps = new BusProblemStop(quito_anterior_suben + quito_siguiente_suben, 
-				 			quito_anterior_bajan + quito_siguiente_bajan, BusProblemStop.getMAX_K(), offset);
+				 			quito_anterior_bajan + quito_siguiente_bajan, BusProblemStop.getMAX_K(),
+				 			parada_anterior.getLatitud(), parada_anterior.getLongitud(), offset);
 		 
 		 return bps;
 	}
