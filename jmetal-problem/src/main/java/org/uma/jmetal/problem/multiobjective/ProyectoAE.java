@@ -54,6 +54,7 @@ public class ProyectoAE extends AbstractBusProblem {
   /** Evaluate() method */
   @Override
   public void evaluate(BusSolution solution) {
+	  System.out.println("ENTRO AL EVALUATE");
 	  double fitness1;
 	  double fitness2;
 
@@ -75,16 +76,18 @@ public class ProyectoAE extends AbstractBusProblem {
 			
 			//Busco la siguiente parada
 			int t = j + 1;
-			while(paradas.get(t).getOffset() != -1){
+			while(t < paradas.size() && paradas.get(t).getOffset() != -1){
 				
 				fitness2 -= calcularDistancia(paradas.get(j).getLatitud(),paradas.get(j).getLongitud(),
 											paradas.get(t).getLatitud(),paradas.get(t).getLongitud());
+				t++;
 			}
 		  } 
 	  }
-
+	  
 	  solution.setObjective(0, fitness1);
 	  solution.setObjective(1, fitness2);
+	  
   }
   
   public void showProblem(){
