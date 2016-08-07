@@ -54,7 +54,6 @@ public class ProyectoAE extends AbstractBusProblem {
   /** Evaluate() method */
   @Override
   public void evaluate(BusSolution solution) {
-	  System.out.println("ENTRO AL EVALUATE");
 	  double fitness1;
 	  double fitness2;
 

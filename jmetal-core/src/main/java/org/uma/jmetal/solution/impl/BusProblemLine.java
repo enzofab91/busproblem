@@ -121,9 +121,23 @@ public class BusProblemLine {
 		parada_anterior.setSuben( parada_anterior.getSuben() - quito_anterior_suben);
 		parada_anterior.setBajan(parada_anterior.getBajan() - quito_anterior_bajan);
 		
+		//Aca se calculan las coordenadas de la nueva parada a partir de la parada anterior y el offset
+		/* http://gis.stackexchange.com/questions/2951/algorithm-for-offsetting-a-latitude-longitude-by-some-amount-of-meters */
+		
+		//Earth’s radius, sphere
+		int R = 6378137;
+	
+		//Coordinate offsets in radians
+		double dLat = offset/R;
+		double dLon = offset/(R*Math.cos(Math.PI*parada_anterior.getLatitud()/180));
+	
+		//OffsetPosition, decimal degrees
+		double nueva_longitud = parada_anterior.getLatitud() + dLat * 180/Math.PI;
+		double nueva_latitud = parada_anterior.getLongitud() + dLon * 180/Math.PI; 
+		 
 		 BusProblemStop bps = new BusProblemStop(quito_anterior_suben + quito_siguiente_suben, 
 				 			quito_anterior_bajan + quito_siguiente_bajan, BusProblemStop.getMAX_K(),
-				 			parada_anterior.getLatitud(), parada_anterior.getLongitud(), offset);
+				 			nueva_longitud, nueva_latitud, offset);
 		 
 		 return bps;
 	}
