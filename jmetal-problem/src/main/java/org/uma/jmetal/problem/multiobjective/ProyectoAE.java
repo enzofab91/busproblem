@@ -2,13 +2,20 @@
 package org.uma.jmetal.problem.multiobjective;
 
 import org.apache.commons.math3.analysis.function.Sin;
+import org.uma.jmetal.operator.CrossoverOperator;
+import org.uma.jmetal.operator.MutationOperator;
+import org.uma.jmetal.operator.impl.selection.BinaryTournamentSelection;
+import org.uma.jmetal.problem.Problem;
 import org.uma.jmetal.problem.impl.AbstractBusProblem;
 import org.uma.jmetal.problem.impl.SDTCoordenadas;
 import org.uma.jmetal.problem.impl.SDTSubenBajan;
 import org.uma.jmetal.solution.BusSolution;
 import org.uma.jmetal.solution.impl.BusProblemLine;
 import org.uma.jmetal.solution.impl.BusProblemStop;
+import org.uma.jmetal.util.JMetalException;
 import org.uma.jmetal.util.obtenerParametros;
+import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
+import org.uma.jmetal.util.evaluator.impl.SequentialSolutionListEvaluator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -35,7 +42,7 @@ public class ProyectoAE extends AbstractBusProblem {
   private Map<Integer,List<Integer>> ordenParadas = new HashMap<Integer, List<Integer>>();
   //private float[][] matrizDistancias = new float[cantParadas][cantParadas];
   private Map<Integer, SDTCoordenadas> coordenadas = new HashMap<Integer, SDTCoordenadas>();
-
+  
 
   /** Constructor */
   
