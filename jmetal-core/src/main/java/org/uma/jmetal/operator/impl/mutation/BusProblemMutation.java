@@ -39,7 +39,7 @@ public class BusProblemMutation implements MutationOperator<BusSolution> {
 			List<BusProblemStop> paradas = line.getParadas();
 			
 			//obtenemos que parada modificar y si se queda donde esta, se saca o se modifica (sin ser la primera y ultima)
-			int parada_mutar = randomGenerator.nextInt(1, paradas.size()-1);
+			int parada_mutar = randomGenerator.nextInt(1, paradas.size()-2);
 			int cantCuadras = Integer.parseInt(obtenerParametros.getParameter("CantidadMaximaCuadras"));
 			
 			
@@ -55,7 +55,7 @@ public class BusProblemMutation implements MutationOperator<BusSolution> {
 					line.quitarParada(parada_mutar);
 				}
 				else{
-					line.nuevaParada(parada_mutar,cantCuadras);
+					line.nuevaParada(parada_mutar,accion);
 				}
 			}
 			

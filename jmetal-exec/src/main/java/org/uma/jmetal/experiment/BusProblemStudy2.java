@@ -55,7 +55,7 @@ import java.util.List;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public class BusProblemStudy2 {
-  private static final int INDEPENDENT_RUNS = 25 ;
+  private static final int INDEPENDENT_RUNS = 1 ;
 
   public static void main(String[] args) throws IOException {
     if (args.length != 2) {
@@ -64,7 +64,7 @@ public class BusProblemStudy2 {
     String experimentBaseDirectory = args[0] ;
     String referenceFrontDirectory = args[1] ;
 
-    List<Problem<BusSolution>> problemList = Arrays.<Problem<BusSolution>>asList(new ProyectoAE()) ;
+    List<Problem<BusSolution>> problemList = Arrays.<Problem<BusSolution>>asList(new ProyectoAE("lineas")) ;
 
     List<TaggedAlgorithm<List<BusSolution>>> algorithmList = configureAlgorithmList(problemList, INDEPENDENT_RUNS) ;
 
@@ -81,16 +81,16 @@ public class BusProblemStudy2 {
                 new PISAHypervolume<BusSolution>(),
                 new InvertedGenerationalDistance<BusSolution>(), new InvertedGenerationalDistancePlus<BusSolution>()))
             .setIndependentRuns(INDEPENDENT_RUNS)
-            .setNumberOfCores(8)
+            .setNumberOfCores(1)
             .build();
 
     new ExecuteAlgorithms<>(experiment).run();
     //new GenerateReferenceParetoSetAndFrontFromDoubleSolutions(experiment).run();
-    new ComputeQualityIndicators<>(experiment).run() ;
-    new GenerateLatexTablesWithStatistics(experiment).run() ;
-    new GenerateWilcoxonTestTablesWithR<>(experiment).run() ;
-    new GenerateFriedmanTestTables<>(experiment).run();
-    new GenerateBoxplotsWithR<>(experiment).setRows(3).setColumns(3).run() ;
+    //new ComputeQualityIndicators<>(experiment).run() ;
+    //new GenerateLatexTablesWithStatistics(experiment).run() ;
+    //new GenerateWilcoxonTestTablesWithR<>(experiment).run() ;
+    //new GenerateFriedmanTestTables<>(experiment).run();
+    //new GenerateBoxplotsWithR<>(experiment).setRows(3).setColumns(3).run() ;
   }
 
   /**
@@ -117,7 +117,7 @@ public class BusProblemStudy2 {
         algorithms.add(new TaggedAlgorithm<List<BusSolution>>(algorithm, "BusProblemA", problemList.get(i), run));
       }
 
-      for (int i = 0; i < problemList.size(); i++) {
+/*      for (int i = 0; i < problemList.size(); i++) {
         Algorithm<List<BusSolution>> algorithm = new NSGAIIBuilder<>(problemList.get(i), new BusProblemCrossover(0.75),
             new BusProblemMutation(0.05))
             .setMaxEvaluations(25000)
@@ -142,7 +142,7 @@ public class BusProblemStudy2 {
             .setPopulationSize(100)
             .build();
         algorithms.add(new TaggedAlgorithm<List<BusSolution>>(algorithm, "BusProblemD", problemList.get(i), run));
-      }
+      }*/
     }
     return algorithms ;
   }

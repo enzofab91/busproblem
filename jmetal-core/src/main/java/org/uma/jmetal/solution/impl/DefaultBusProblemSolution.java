@@ -27,7 +27,7 @@ public class DefaultBusProblemSolution
 		super(solution.problem);
 		
 		for (int i = 0; i < problem.getNumberOfVariables(); i++) {
-	      setVariableValue(i, solution.getVariableValue(i));
+	      setVariableValue(i, solution.getVariableValue(i).copy());
 	    }
 
 	    for (int i = 0; i < problem.getNumberOfObjectives(); i++) {
@@ -37,7 +37,7 @@ public class DefaultBusProblemSolution
 	
 	@Override
 	public String getVariableValueString(int index) {
-		return getVariableValue(index).toString();
+		return getVariableValue(index).print();
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class DefaultBusProblemSolution
 	    														aux,
 	    														coordenadas.get(aux).getLatitud(),
 	    														coordenadas.get(aux).getLogitud(),
-	    														1); 
+	    														0); 
 	    			}
 	    			else{
 	    				
@@ -81,7 +81,7 @@ public class DefaultBusProblemSolution
 																aux,
 																coordenadas.get(aux).getLatitud(),
 	    														coordenadas.get(aux).getLogitud(),
-																1); 
+																0); 
 	    			}
 	    			
 	    			paradas.setK(paradas.getK()  + bps.getBajan());
@@ -92,7 +92,7 @@ public class DefaultBusProblemSolution
 		    }
 		    
 			setVariableValue(posicion, paradas);
-			paradas.print();
+			//paradas.print();
 		}		
 	}
 

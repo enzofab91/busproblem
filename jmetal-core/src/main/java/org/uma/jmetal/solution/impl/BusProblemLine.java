@@ -59,46 +59,47 @@ public class BusProblemLine {
 			BusProblemStop bs = it.next();
 			paradas_nuevas.add(bs);
 			
-			//busco el indice
-			if(bs.getParada() != parada && !encontre){
-				indice++;
-				encontre = true;
-			}
+//			//busco el indice
+//			if(bs.getParada() != parada && !encontre){
+//				indice++;
+//				encontre = true;
+//			}
 		}
 		
-		BusProblemStop bps_new = funcionMagica(paradas_nuevas, indice, offset);
+		BusProblemStop bps_new = funcionMagica(paradas_nuevas, parada, offset);
 		
-		paradas_nuevas.add(indice,bps_new);
+		paradas_nuevas.add(parada,bps_new);
 		this.paradas = paradas_nuevas;
 		
 	}
 	
 	public void quitarParada(int parada){
-		Iterator<BusProblemStop> it = paradas.iterator();
-				
-		boolean encontre = false;
-		
-		while(it.hasNext() && !encontre){
-			BusProblemStop bs = it.next();
-			if(bs.getParada() == parada){
-				bs.setOffset(-1);
-				encontre = true;
-			}
-		}
+		paradas.get(parada).setOffset(-1);
 	}
 	
-	public void print(){
-		System.out.println("Linea=" + Integer.toString(linea));
-		System.out.println("Libres=" + Integer.toString(k));
-		System.out.print("Paradas=<");
+	public String print(){
+		String str = "";
+		
+		str += "Linea=" + Integer.toString(linea) + "\n";
+////		str += "Paradas=<";
+//		
+////		System.out.println("Linea=" + Integer.toString(linea));
+//		System.out.println("Libres=" + Integer.toString(k));
+//		System.out.print("Paradas=<");
 		
 		Iterator<BusProblemStop> it = paradas.listIterator();
 		
 		while(it.hasNext()){
 			BusProblemStop elem = it.next();
-			System.out.print("(" + elem.getParada() + "," +  Integer.toString(elem.getSuben()) + "," + Integer.toString(elem.getBajan()) + ") ");
+			
+			str += "\t(" + elem.getParada() + "," + Integer.toString(elem.getOffset()) + "," + Integer.toString(elem.getSuben()) + "," + Integer.toString(elem.getBajan()) + ")\n";
+//			System.out.print("(" + elem.getParada() + "," +  Integer.toString(elem.getSuben()) + "," + Integer.toString(elem.getBajan()) + ") ");
 		}
-		System.out.println(">");
+		
+//		System.out.println(">");
+//		str += ">\n";
+		
+		return str;
 	}
 	
 	private BusProblemStop funcionMagica(List<BusProblemStop> paradas, int indice, int offset){
@@ -128,8 +129,8 @@ public class BusProblemLine {
 		int R = 6378137;
 	
 		//Coordinate offsets in radians
-		double dLat = offset/R;
-		double dLon = offset/(R*Math.cos(Math.PI*parada_anterior.getLatitud()/180));
+		double dLat = (offset*100)/R;
+		double dLon = (offset*100)/(R*Math.cos(Math.PI*parada_anterior.getLatitud()/180));
 	
 		//OffsetPosition, decimal degrees
 		double nueva_longitud = parada_anterior.getLatitud() + dLat * 180/Math.PI;
@@ -140,6 +141,52 @@ public class BusProblemLine {
 				 			nueva_longitud, nueva_latitud, offset);
 		 
 		 return bps;
+	}
+	
+	public int getPseudoRandomStop(){
+		return paradas.get(randomGenerator.nextInt(0, paradas.size()-1)).getParada();
+	}
+	
+	public BusProblemStop checkBusStopInLine(int nro_parada){
+		Iterator<BusProblemStop> it = paradas.listIterator();
+		
+		BusProblemStop bps = null;
+		BusProblemStop bps_aux = null;
+		
+		while(it.hasNext()){
+			bps_aux = it.next();
+			
+			if(bps_aux.getParada() == nro_parada){
+				bps = bps_aux;
+				break;
+			}
+			
+		}
+		
+		return bps;
+	}
+
+	public BusProblemLine copy() {
+		return new BusProblemLine(this);
+	}
+
+	private BusProblemLine(BusProblemLine busProblemLine) {
+		this.k = busProblemLine.getK();
+		this.linea = busProblemLine.getLine();
+		this.randomGenerator = JMetalRandom.getInstance();
+		
+		//Copio las paradas en limpio
+		for(int i = 0; i < busProblemLine.getParadas().size(); i++){
+			BusProblemStop bps = new BusProblemStop(busProblemLine.getParadas().get(i).getSuben(), 
+													busProblemLine.getParadas().get(i).getBajan(), 
+													busProblemLine.getParadas().get(i).getParada(), 
+													busProblemLine.getParadas().get(i).getLatitud(), 
+													busProblemLine.getParadas().get(i).getLongitud(), 
+													busProblemLine.getParadas().get(i).getOffset()
+													);
+			
+			this.agregarParada(bps);			
+		}
 	}
 
 }

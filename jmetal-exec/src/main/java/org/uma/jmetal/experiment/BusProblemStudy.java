@@ -56,7 +56,7 @@ import java.util.List;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public class BusProblemStudy  {
-  private static final int INDEPENDENT_RUNS = 30;
+  private static final int INDEPENDENT_RUNS = 1;
 
   public static void main(String[] args) throws IOException {
     if (args.length != 1) {
@@ -64,11 +64,11 @@ public class BusProblemStudy  {
     }
     String experimentBaseDirectory = args[0] ;
 
-    List<Problem<BusSolution>> problemList = Arrays.<Problem<BusSolution>>asList(new ProyectoAE()) ;
+    List<Problem<BusSolution>> problemList = Arrays.<Problem<BusSolution>>asList(new ProyectoAE("lineas")) ;
 
     List<TaggedAlgorithm<List<BusSolution>>> algorithmList = configureAlgorithmList(problemList, INDEPENDENT_RUNS) ;
 
-    List<String> referenceFrontFileNames = null; //Arrays.asList("ZDT1.pf", "ZDT2.pf", "ZDT3.pf", "ZDT4.pf", "ZDT6.pf") ;
+    List<String> referenceFrontFileNames = Arrays.asList("ZDT1.pf", "ZDT2.pf", "ZDT3.pf", "ZDT4.pf", "ZDT6.pf") ;
 
     Experiment<BusSolution, List<BusSolution>> experiment =
         new ExperimentBuilder<BusSolution, List<BusSolution>>("BusProblemStudy")
@@ -120,7 +120,7 @@ public class BusProblemStudy  {
         algorithms.add(new TaggedAlgorithm<List<BusSolution>>(algorithm, "BusProblemA", problemList.get(i), run));
       }
 
-      for (int i = 0; i < problemList.size(); i++) {
+     /* for (int i = 0; i < problemList.size(); i++) {
         Algorithm<List<BusSolution>> algorithm = new NSGAIIBuilder<BusSolution>(problemList.get(i), new BusProblemCrossover(0.75),
             new BusProblemMutation(0.05))
         	.setSelectionOperator(new BinaryTournamentSelection<BusSolution>( new RankingAndCrowdingDistanceComparator<BusSolution>()))
@@ -148,7 +148,7 @@ public class BusProblemStudy  {
             .setPopulationSize(100)
             .build();
         algorithms.add(new TaggedAlgorithm<List<BusSolution>>(algorithm, "BusProblemD", problemList.get(i), run));
-      }
+      }*/
     }
     return algorithms ;
   }

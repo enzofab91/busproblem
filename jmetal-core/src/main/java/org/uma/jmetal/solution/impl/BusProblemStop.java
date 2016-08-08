@@ -31,7 +31,7 @@ public class BusProblemStop {
 		return parada;
 	}
 	
-	public float getOffset(){
+	public int getOffset(){
 		return offset;
 	}
 	
