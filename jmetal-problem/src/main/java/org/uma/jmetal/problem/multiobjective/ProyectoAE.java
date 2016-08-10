@@ -74,7 +74,7 @@ public class ProyectoAE extends AbstractBusProblem {
 		  linea = solution.getVariableValue(i);
 		  List<BusProblemStop> paradas = linea.getParadas();
 		  
-		  for(int j=0; i < paradas.size()-1 ; i++){
+		  for(int j=0; j < paradas.size()-1 ; j++){
 			  
 			//Me aseguro que la parada existe
 			if (paradas.get(j).getOffset() != -1)
@@ -85,7 +85,8 @@ public class ProyectoAE extends AbstractBusProblem {
 			while(t < paradas.size() && paradas.get(t).getOffset() != -1){
 				
 				fitness2 -= calcularDistancia(paradas.get(j).getLatitud(),paradas.get(j).getLongitud(),
-											paradas.get(t).getLatitud(),paradas.get(t).getLongitud());
+											paradas.get(t).getLatitud(),paradas.get(t).getLongitud())  + 
+						demoraPromedioBajar * paradas.get(j).getBajan() + demoraPromedioSubir * paradas.get(j).getSuben();
 				t++;
 			}
 		  } 

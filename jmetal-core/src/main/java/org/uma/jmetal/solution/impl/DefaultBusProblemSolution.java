@@ -8,12 +8,15 @@ import org.uma.jmetal.problem.BusProblem;
 import org.uma.jmetal.problem.impl.SDTCoordenadas;
 import org.uma.jmetal.problem.impl.SDTSubenBajan;
 import org.uma.jmetal.solution.BusSolution;
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 
 @SuppressWarnings("serial")
 public class DefaultBusProblemSolution 
 	extends AbstractGenericSolution<BusProblemLine, BusProblem>
 	implements BusSolution {
+	
+	private JMetalRandom randomGenerator = JMetalRandom.getInstance();
 
 	public DefaultBusProblemSolution(BusProblem problem) {
 		super(problem);
@@ -63,31 +66,51 @@ public class DefaultBusProblemSolution
 		    	
 		    	if(matrizPasajeros[posicion][aux] != null){
 		    		BusProblemStop bps;
+		    		
+		    		int bajan = randomGenerator.nextInt(0, matrizPasajeros[posicion][aux].getBajan());
+		    		int suben = randomGenerator.nextInt(0, matrizPasajeros[posicion][aux].getSuben());
+//		    		int bajan = matrizPasajeros[posicion][aux].getBajan();
+//		    		int suben =  matrizPasajeros[posicion][aux].getSuben();
 		
 		    			
-	    			if(paradas.getK() >= (matrizPasajeros[posicion][aux].getSuben() - matrizPasajeros[posicion][aux].getBajan())){
+	    			if(paradas.getK() >= (suben - bajan)){
 	    				
-	    				bps = new BusProblemStop(matrizPasajeros[posicion][aux].getSuben(),
-	    														matrizPasajeros[posicion][aux].getBajan(),
-	    														aux,
-	    														coordenadas.get(aux).getLatitud(),
-	    														coordenadas.get(aux).getLogitud(),
-	    														0); 
+	    				bps = new BusProblemStop(suben,bajan,aux,coordenadas.get(aux).getLatitud(),coordenadas.get(aux).getLogitud(),0); 
 	    			}
 	    			else{
 	    				
-	    				bps = new BusProblemStop(paradas.getK() + matrizPasajeros[posicion][aux].getBajan(),
-																matrizPasajeros[posicion][aux].getBajan(),
-																aux,
-																coordenadas.get(aux).getLatitud(),
-	    														coordenadas.get(aux).getLogitud(),
-																0); 
+	    				bps = new BusProblemStop(paradas.getK() + bajan,bajan,aux,coordenadas.get(aux).getLatitud(),coordenadas.get(aux).getLogitud(),0); 
 	    			}
 	    			
 	    			paradas.setK(paradas.getK()  + bps.getBajan());
 	    			paradas.setK(paradas.getK()  - bps.getSuben());
 	    			
 		    		paradas.agregarParada(bps);
+		
+		    			
+//	    			if(paradas.getK() >= (matrizPasajeros[posicion][aux].getSuben() - matrizPasajeros[posicion][aux].getBajan())){
+//	    				
+//	    				bps = new BusProblemStop(matrizPasajeros[posicion][aux].getSuben(),
+//	    														matrizPasajeros[posicion][aux].getBajan(),
+//	    														aux,
+//	    														coordenadas.get(aux).getLatitud(),
+//	    														coordenadas.get(aux).getLogitud(),
+//	    														0); 
+//	    			}
+//	    			else{
+//	    				
+//	    				bps = new BusProblemStop(paradas.getK() + matrizPasajeros[posicion][aux].getBajan(),
+//																matrizPasajeros[posicion][aux].getBajan(),
+//																aux,
+//																coordenadas.get(aux).getLatitud(),
+//	    														coordenadas.get(aux).getLogitud(),
+//																0); 
+//	    			}
+//	    			
+//	    			paradas.setK(paradas.getK()  + bps.getBajan());
+//	    			paradas.setK(paradas.getK()  - bps.getSuben());
+//	    			
+//		    		paradas.agregarParada(bps);
 		    	}
 		    }
 		    

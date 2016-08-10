@@ -55,14 +55,12 @@ import java.util.List;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public class BusProblemStudy2 {
-  private static final int INDEPENDENT_RUNS = 1 ;
+  private static final int INDEPENDENT_RUNS = 2 ;
 
   public static void main(String[] args) throws IOException {
     if (args.length != 2) {
       throw new JMetalException("Needed arguments: experimentBaseDirectory referenceFrontDirectory") ;
     }
-    String experimentBaseDirectory = args[0] ;
-    String referenceFrontDirectory = args[1] ;
 
     List<Problem<BusSolution>> problemList = Arrays.<Problem<BusSolution>>asList(new ProyectoAE("lineas")) ;
 
@@ -72,25 +70,26 @@ public class BusProblemStudy2 {
         new ExperimentBuilder<BusSolution, List<BusSolution>>("BusProblemStudy2")
             .setAlgorithmList(algorithmList)
             .setProblemList(problemList)
-            .setExperimentBaseDirectory(experimentBaseDirectory)
+            .setExperimentBaseDirectory("/home/enzofabbiani/Desktop/AE/PROYECTO/")
             .setOutputParetoFrontFileName("FUN")
             .setOutputParetoSetFileName("VAR")
-            .setReferenceFrontDirectory(referenceFrontDirectory)
+            .setReferenceFrontDirectory("/home/enzofabbiani/Desktop/AE/PROYECTO/pareto_front")
             .setIndicatorList(Arrays.asList(
-                new Epsilon<BusSolution>(), new Spread<BusSolution>(), new GenerationalDistance<BusSolution>(),
-                new PISAHypervolume<BusSolution>(),
-                new InvertedGenerationalDistance<BusSolution>(), new InvertedGenerationalDistancePlus<BusSolution>()))
+                /*new Epsilon<BusSolution>(), */new Spread<BusSolution>(), new GenerationalDistance<BusSolution>(),
+                new PISAHypervolume<BusSolution>()/*,
+                new InvertedGenerationalDistance<BusSolution>(), new InvertedGenerationalDistancePlus<BusSolution>()*/))
             .setIndependentRuns(INDEPENDENT_RUNS)
-            .setNumberOfCores(1)
+            .setNumberOfCores(2)
             .build();
 
     new ExecuteAlgorithms<>(experiment).run();
-    //new GenerateReferenceParetoSetAndFrontFromDoubleSolutions(experiment).run();
-    //new ComputeQualityIndicators<>(experiment).run() ;
-    //new GenerateLatexTablesWithStatistics(experiment).run() ;
-    //new GenerateWilcoxonTestTablesWithR<>(experiment).run() ;
-    //new GenerateFriedmanTestTables<>(experiment).run();
-    //new GenerateBoxplotsWithR<>(experiment).setRows(3).setColumns(3).run() ;
+//    new GenerateReferenceParetoSetAndFrontFromDoubleSolutions(experiment).run();
+    new GenerateReferenceParetoFront(experiment).run();
+    new ComputeQualityIndicators<>(experiment).run() ;
+    new GenerateLatexTablesWithStatistics(experiment).run() ;
+    new GenerateWilcoxonTestTablesWithR<>(experiment).run() ;
+    new GenerateFriedmanTestTables<>(experiment).run();
+    new GenerateBoxplotsWithR<>(experiment).setRows(3).setColumns(3).run() ;
   }
 
   /**
@@ -111,7 +110,7 @@ public class BusProblemStudy2 {
       for (int i = 0; i < problemList.size(); i++) {
         Algorithm<List<BusSolution>> algorithm = new NSGAIIBuilder<>(problemList.get(i), new BusProblemCrossover(0.75),
             new BusProblemMutation(0.01))
-            .setMaxEvaluations(25000)
+            .setMaxEvaluations(10000)
             .setPopulationSize(100)
             .build();
         algorithms.add(new TaggedAlgorithm<List<BusSolution>>(algorithm, "BusProblemA", problemList.get(i), run));
