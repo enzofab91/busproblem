@@ -55,25 +55,25 @@ import java.util.List;
  * @author Antonio J. Nebro <antonio@lcc.uma.es>
  */
 public class BusProblemStudy2 {
-  private static final int INDEPENDENT_RUNS = 2 ;
+  private static final int INDEPENDENT_RUNS = 30 ;
 
   public static void main(String[] args) throws IOException {
-    if (args.length != 2) {
-      throw new JMetalException("Needed arguments: experimentBaseDirectory referenceFrontDirectory") ;
-    }
+    //if (args.length != 2) {
+    //  throw new JMetalException("Needed arguments: experimentBaseDirectory referenceFrontDirectory") ;
+    //}
 
-    List<Problem<BusSolution>> problemList = Arrays.<Problem<BusSolution>>asList(new ProyectoAE("lineas")) ;
+    List<Problem<BusSolution>> problemList = Arrays.<Problem<BusSolution>>asList(new ProyectoAE("instancia1")) ;
 
     List<TaggedAlgorithm<List<BusSolution>>> algorithmList = configureAlgorithmList(problemList, INDEPENDENT_RUNS) ;
 
     Experiment<BusSolution, List<BusSolution>> experiment =
-        new ExperimentBuilder<BusSolution, List<BusSolution>>("BusProblemStudy2")
+        new ExperimentBuilder<BusSolution, List<BusSolution>>("Instancia_1")
             .setAlgorithmList(algorithmList)
             .setProblemList(problemList)
-            .setExperimentBaseDirectory("/home/enzofabbiani/Desktop/AE/PROYECTO/")
+            .setExperimentBaseDirectory("/home/pablo/Fing/AE/Proyecto")
             .setOutputParetoFrontFileName("FUN")
             .setOutputParetoSetFileName("VAR")
-            .setReferenceFrontDirectory("/home/enzofabbiani/Desktop/AE/PROYECTO/pareto_front")
+            .setReferenceFrontDirectory("/home/pablo/Fing/AE/Proyecto/Instancia_1_FP")
             .setIndicatorList(Arrays.asList(
                 /*new Epsilon<BusSolution>(), */new Spread<BusSolution>(), new GenerationalDistance<BusSolution>(),
                 new PISAHypervolume<BusSolution>()/*,
@@ -108,30 +108,31 @@ public class BusProblemStudy2 {
 
     for (int run = 0; run < independentRuns; run++) {
       for (int i = 0; i < problemList.size(); i++) {
-        Algorithm<List<BusSolution>> algorithm = new NSGAIIBuilder<>(problemList.get(i), new BusProblemCrossover(0.75),
+        Algorithm<List<BusSolution>> algorithm = new NSGAIIBuilder<>(problemList.get(i), new BusProblemCrossover(0.60),
             new BusProblemMutation(0.01))
             .setMaxEvaluations(10000)
             .setPopulationSize(100)
             .build();
-        algorithms.add(new TaggedAlgorithm<List<BusSolution>>(algorithm, "BusProblemA", problemList.get(i), run));
+        
+        algorithms.add(new TaggedAlgorithm<List<BusSolution>>(algorithm, "BusProblem", problemList.get(i), run));
       }
 
-/*      for (int i = 0; i < problemList.size(); i++) {
-        Algorithm<List<BusSolution>> algorithm = new NSGAIIBuilder<>(problemList.get(i), new BusProblemCrossover(0.75),
+      /*for (int i = 0; i < problemList.size(); i++) {
+        Algorithm<List<BusSolution>> algorithm = new NSGAIIBuilder<>(problemList.get(1), new BusProblemCrossover(0.75),
             new BusProblemMutation(0.05))
             .setMaxEvaluations(25000)
             .setPopulationSize(100)
             .build();
-        algorithms.add(new TaggedAlgorithm<List<BusSolution>>(algorithm, "BusProblemB", problemList.get(i), run));
+        algorithms.add(new TaggedAlgorithm<List<BusSolution>>(algorithm, "BusProblemB", problemList.get(1), run));
       }
 
       for (int i = 0; i < problemList.size(); i++) {
-        Algorithm<List<BusSolution>> algorithm = new NSGAIIBuilder<>(problemList.get(i), new BusProblemCrossover(0.60),
+        Algorithm<List<BusSolution>> algorithm = new NSGAIIBuilder<>(problemList.get(2), new BusProblemCrossover(0.60),
             new BusProblemMutation(0.01))
             .setMaxEvaluations(25000)
             .setPopulationSize(100)
             .build();
-        algorithms.add(new TaggedAlgorithm<List<BusSolution>>(algorithm, "BusProblemC", problemList.get(i), run));
+        algorithms.add(new TaggedAlgorithm<List<BusSolution>>(algorithm, "BusProblemC", problemList.get(2), run));
       }
 
       for (int i = 0; i < problemList.size(); i++) {

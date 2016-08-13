@@ -9,8 +9,8 @@ public final class obtenerParametros {
 	public static String getParameter(String ParameterName){
 		  String valor = "";
 		  try{
-			  	//BufferedReader parametros = new BufferedReader(new FileReader("/home/pablo/Fing/AE/Proyecto/DatosDeTest/parametros"));
-			    BufferedReader parametros = new BufferedReader(new FileReader("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/parametros"));
+			  	BufferedReader parametros = new BufferedReader(new FileReader("/home/pablo/Fing/AE/Proyecto/DatosDeTest/parametros"));
+			    //BufferedReader parametros = new BufferedReader(new FileReader("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/parametros"));
 			    String line = parametros.readLine();
 
 			    while (line != null &&  valor.equals("")) {

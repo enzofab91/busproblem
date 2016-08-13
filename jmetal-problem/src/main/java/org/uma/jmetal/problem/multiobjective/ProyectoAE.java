@@ -52,7 +52,7 @@ public class ProyectoAE extends AbstractBusProblem {
   
   public ProyectoAE(String lines)  {
     readProblem(lines);
-    showProblem();    
+    //showProblem();    
     setNumberOfVariables(this.cantLines);
     setNumberOfObjectives(2);
     setName("BusProblem");
@@ -83,10 +83,14 @@ public class ProyectoAE extends AbstractBusProblem {
 			//Busco la siguiente parada
 			int t = j + 1;
 			while(t < paradas.size() && paradas.get(t).getOffset() != -1){
+				double distancia = calcularDistancia(paradas.get(j).getLatitud(),paradas.get(j).getLongitud(),
+						paradas.get(t).getLatitud(),paradas.get(t).getLongitud());
+				double tiempo_recorrido = (calcularDistancia(paradas.get(j).getLatitud(),paradas.get(j).getLongitud(),
+						paradas.get(t).getLatitud(),paradas.get(t).getLongitud()) / 12.5) / 60;
+				double tiempo_pasajeros = demoraPromedioBajar * paradas.get(j).getBajan() + 
+						demoraPromedioSubir * paradas.get(j).getSuben() / 60;
 				
-				fitness2 -= calcularDistancia(paradas.get(j).getLatitud(),paradas.get(j).getLongitud(),
-											paradas.get(t).getLatitud(),paradas.get(t).getLongitud())  + 
-						demoraPromedioBajar * paradas.get(j).getBajan() + demoraPromedioSubir * paradas.get(j).getSuben();
+				fitness2 -= (tiempo_recorrido + tiempo_pasajeros);
 				t++;
 			}
 		  } 
@@ -173,8 +177,8 @@ public class ProyectoAE extends AbstractBusProblem {
 		
   private void readProblem(String file){
 	try{
-		//BufferedReader br = new BufferedReader(new FileReader("/home/pablo/Fing/AE/Proyecto/DatosDeTest/" + file));
-		BufferedReader br = new BufferedReader(new FileReader("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/" + file));
+		BufferedReader br = new BufferedReader(new FileReader("/home/pablo/Fing/AE/Proyecto/DatosDeTest/" + file));
+		//BufferedReader br = new BufferedReader(new FileReader("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/" + file));
 
 		String line = br.readLine();
 	    String[] elems = line.split(",");
@@ -190,8 +194,8 @@ public class ProyectoAE extends AbstractBusProblem {
 	    	this.correlacion.put(Integer.parseInt(elems[i]), i);
 	    	
 	    	//Leo las distancas
-	    	//BufferedReader distancias = new BufferedReader(new FileReader("/home/pablo/Fing/AE/Proyecto/DatosDeTest/coordenadas"));
-	    	BufferedReader distancias = new BufferedReader(new FileReader("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/coordenadas"));
+	    	BufferedReader distancias = new BufferedReader(new FileReader("/home/pablo/Fing/AE/Proyecto/DatosDeTest/coordenadas"));
+	    	//BufferedReader distancias = new BufferedReader(new FileReader("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/coordenadas"));
 	    	//BufferedReader distancias = new BufferedReader(new FileReader("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/" + elems[i]+ "_distancias"));
 	    	
 	    	line = distancias.readLine();
@@ -206,8 +210,8 @@ public class ProyectoAE extends AbstractBusProblem {
 	        distancias.close();
 	        
 	        //Leo matriz de pasajeros
-	        //BufferedReader pasajeros = new BufferedReader(new FileReader("/home/pablo/Fing/AE/Proyecto/DatosDeTest/" + elems[i]+ "_pasajeros"));
-	        BufferedReader pasajeros = new BufferedReader(new FileReader("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/" + elems[i]+ "_pasajeros"));
+	        BufferedReader pasajeros = new BufferedReader(new FileReader("/home/pablo/Fing/AE/Proyecto/DatosDeTest/" + elems[i]+ "_pasajeros"));
+	        //BufferedReader pasajeros = new BufferedReader(new FileReader("/home/enzofabbiani/Desktop/AE/PROYECTO/DatosDeTest/" + elems[i]+ "_pasajeros"));
 	        
 	        
 	    	line = pasajeros.readLine();

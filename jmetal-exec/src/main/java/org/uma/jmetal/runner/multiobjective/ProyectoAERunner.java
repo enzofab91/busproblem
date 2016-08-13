@@ -66,7 +66,7 @@ public class ProyectoAERunner extends AbstractAlgorithmRunner {
       //referenceParetoFront = "/home/enzofabbiani/Desktop/AE/PROYECTO/jMetal/jmetal-problem/src/test/resources/pareto_fronts/ZDT1.pf" ;
     }
 
-    problem = new ProyectoAE("lineas");
+    problem = new ProyectoAE("instancia1");
     
     double crossoverProbability = Double.parseDouble(obtenerParametros.getParameter("ProbabilidadCruzamiento"));
     crossover = new BusProblemCrossover(crossoverProbability);
